@@ -26,6 +26,7 @@ void Color(int Background, int Text);
 int buscar_destino(NODO *raiz, char viaje[], int cont);
 void mostrar_mayor(NODO *raiz);
 
+int sser(NODO *raiz,int numero, int cont);
 NODO *Buscar(NODO *raiz);
 int buscar_reserva(NODO *raiz, int numero, int cont);
 NODO *Cancelar(NODO *raiz, int reserva);
@@ -66,7 +67,6 @@ void pdc()
     printf("         `-(            )\n");
     printf("            ^^\\..___,.--`\n");
 }
-
 enum Colors { // Listado de colores (La letra "L" al inicio, indica que es un color m�s claro que su antecesor).
  BLACK = 0,
  BLUE = 1,
@@ -206,6 +206,15 @@ void treefree(NODO *rarbol){//LIBERAR MEMORIA/ARBOL
 	}
 }
 
+int sser(NODO *raiz, int numero ,int cont)
+{
+    if(raiz!=NULL){
+        if (raiz->n_reserva == numero) cont = cont + 1;
+        buscar_reserva(raiz->izq, numero, cont);
+        buscar_reserva(raiz->der, numero, cont);
+	}
+    return cont;
+}
 NODO *Buscar(NODO *raiz){//RETORNA EL ULTIMO NODO VACIO A LA IZQUIERDA
     NODO *actual = raiz;
     while (actual->izq != NULL) {
@@ -216,7 +225,7 @@ NODO *Buscar(NODO *raiz){//RETORNA EL ULTIMO NODO VACIO A LA IZQUIERDA
 NODO *Cancelar(NODO *raiz, int reserva) {//ELIMINACION INORDEN
     if (reserva < raiz->n_reserva) raiz->izq = Cancelar(raiz->izq, reserva);//recorre el lado izquierdo
     else if (reserva > raiz->n_reserva) raiz->der = Cancelar(raiz->der, reserva);//recorre el lado derecho
-    else // Nodo encontrado, procedemos a eliminarlo
+    else// Nodo encontrado, procedemos a eliminarlo
     {
         if (raiz->izq == NULL) // Caso 1: No tiene hijos o solo tiene un hijo
         {
@@ -235,7 +244,6 @@ NODO *Cancelar(NODO *raiz, int reserva) {//ELIMINACION INORDEN
             pdc();
             return temp;
         }
-
         // Caso 2: Tiene dos hijos, sucesor inorden
         NODO* aux = Buscar(raiz->der);
         raiz->n_reserva = aux->n_reserva;
@@ -387,14 +395,24 @@ int main()
         case 1://CANCELAR UNA RESERVA
             if (raiz != NULL)
             {
+                flag = 0;
                 Color(BLACK, YELLOW);
                 printf("\nIngrese reserva a cancelar: ");
                 Color(BLACK, DGREY);
                 scanf("%d", &reserva);
-                raiz = Cancelar(raiz, reserva);
+                fflush(stdin);
+                flag = sser(raiz, reserva, 0);
+                if (flag != 0)
+                {
+                    raiz = Cancelar(raiz, reserva);
+                }else
+                {
+                    Color(BLACK, YELLOW);
+                    printf("\nRESERVA NO ENCONTRADA");
+                    Color(BLACK, DGREY);
+                }
                 printf("\n");
                 system("pause");
-
             }else Color(BLACK, YELLOW), printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), Color(BLACK, DGREY), system("pause");
             
             break;
@@ -440,6 +458,7 @@ int main()
             system("cls");
             Color(BLACK, RED);
             finprogram();
+            printf("Fin Del Programa.");
             treefree(raiz);
             exit(0);
             break;
@@ -447,6 +466,4 @@ int main()
             break;
         }
     } while (1);
-    
-
 }
