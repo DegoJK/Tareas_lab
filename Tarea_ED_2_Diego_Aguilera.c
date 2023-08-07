@@ -18,6 +18,7 @@ typedef struct nodo
 int global = 0;
 /*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*/
 
+void pdc();
 void res_creada();
 void finprogram();
 void treefree(NODO *rarbol);
@@ -26,7 +27,7 @@ int buscar_destino(NODO *raiz, char viaje[], int cont);
 void mostrar_mayor(NODO *raiz);
 
 NODO *Buscar(NODO *raiz);
-void buscar_reserva(NODO *raiz, int numero);
+int buscar_reserva(NODO *raiz, int numero, int cont);
 NODO *Cancelar(NODO *raiz, int reserva);
 
 NODO *CrearArbol(NODO *nuevo, int reserva);
@@ -35,6 +36,36 @@ int menu();
 void inicio();
 
 /*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*DECORACION*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*/
+
+void pdc()
+{
+    system("cls");
+    printf("                            ,--.\n");
+    printf("                          {    }\n");
+    printf("                          K,   }\n");
+    printf("                         /  `Y`\n");
+    printf("                    _   /   /\n");
+    printf("                   {_'-K.__/\n");
+    printf("                     `/-.__L._\n");
+    printf("                     /  ' /`\\_}\n");
+    printf("                    /  ' /    -RESERVA CANCELADA-\n");
+    printf("            ____   /  ' /\n");
+    printf("     ,-'~~~~    ~~/  ' /_\n");
+    printf("   ,'             ``~~~%%',\n");
+    printf("  (                     %%  Y\n");
+    printf(" {                      %% I\n");
+    printf("{      -                 %%  `.\n");
+    printf("|       ',                %%  )\n");
+    printf("|        |   ,..__      __. Y\n");
+    printf("|    .,_./  Y ' / ^Y   J   )|\n");
+    printf("\\           |' /   |   |   ||\n");
+    printf(" \\          L_/    . _ (_,.'(\n");
+    printf("  \\,   ,      ^^\"\"' / |      )\n");
+    printf("    \\_  \\          /,L]     /\n");
+    printf("      '-_`-,       ` `   ./`\n");
+    printf("         `-(            )\n");
+    printf("            ^^\\..___,.--`\n");
+}
 
 enum Colors { // Listado de colores (La letra "L" al inicio, indica que es un color m�s claro que su antecesor).
  BLACK = 0,
@@ -67,7 +98,7 @@ void Color(int Background, int Text){ // Funci�n para cambiar el color del fon
 }
 void res_creada()//FUNCION AL CREAR RESERVA
 {
-    printf("\n_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_VIAJE CREADO CON EXITO_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n");
+    printf("\n_*_*_*_*_*_*_*_*_*_*_*_*_*_*__*_*VIAJE CREADO CON EXITO_*_*_*_*_*_*_*_*_*_*_*_*_*_*_\n");
     printf("                             ==(W{==========-      /===-                        \n");
     printf("                              ||  (.--.)         /===-_---~~~~~~~~~------____  \n");
     printf("                              | \\_,|**|,__      |===-~___                _,-' ` \n");
@@ -191,11 +222,17 @@ NODO *Cancelar(NODO *raiz, int reserva) {//ELIMINACION INORDEN
         {
             NODO* temp = raiz->der;
             free(raiz);
+            Color(BLACK, YELLOW);
+            pdc();
+            Color(BLACK, DGREY);
             return temp;
         } else if (raiz->der == NULL) // Caso 1: No tiene hijos o solo tiene un hijo
         {
             NODO* temp = raiz->izq;
+            Color(BLACK, YELLOW);
             free(raiz);
+            Color(BLACK, DGREY);
+            pdc();
             return temp;
         }
 
@@ -209,15 +246,18 @@ NODO *Cancelar(NODO *raiz, int reserva) {//ELIMINACION INORDEN
 
 int buscar_destino(NODO *raiz, char viaje[], int cont){
 	if(raiz!=NULL){
-		buscar_destino(raiz->izq, viaje, cont);
+		cont = buscar_destino(raiz->izq, viaje, cont);
         if (strcmp(viaje, raiz->destino) == 0)
         {
             cont = cont + 1;
-            printf("\n%d\t",raiz->n_reserva);
-            printf("%s\t", raiz->nombre);
-            printf("%s\t", raiz->destino);
+            Color(BLACK, YELLOW);
+            if (cont == 1) printf("+--------+--------------------+--------------------+\n| Boleto |     Aventurero     |      Destino       |\n+--------+--------------------+--------------------+");
+            printf("\n|"), Color(BLACK, DGREY), printf("%*d",-8,raiz->n_reserva), Color(BLACK, YELLOW), printf("|");
+            Color(BLACK, DGREY), printf("%*s",-20,raiz->nombre), Color(BLACK, YELLOW), printf("|");
+            Color(BLACK, DGREY), printf("%*s",-20,raiz->destino), Color(BLACK, YELLOW), printf("|");
+            printf("\n+--------+--------------------+--------------------+");
         }
-		buscar_destino(raiz->der, viaje, cont);
+		cont = buscar_destino(raiz->der, viaje, cont);
 	}
     return cont;
 }
@@ -225,30 +265,33 @@ int buscar_destino(NODO *raiz, char viaje[], int cont){
 void mostrar_mayor(NODO *raiz){//MUESTRA VUELOS EN INORDEN O DE MENOR A MAYOR
 	if(raiz!=NULL){
 		mostrar_mayor(raiz->izq);
-		printf("\n %d\t",raiz->n_reserva);
-        printf(" %s\t\t", raiz->nombre);
-        printf(" %s\t\t", raiz->destino);
+        Color(BLACK, YELLOW);
+        printf("\n|"), Color(BLACK, DGREY), printf("%*d",-8,raiz->n_reserva), Color(BLACK, YELLOW), printf("|");
+        Color(BLACK, DGREY), printf("%*s",-20,raiz->nombre), Color(BLACK, YELLOW), printf("|");
+        Color(BLACK, DGREY), printf("%*s",-20,raiz->destino), Color(BLACK, YELLOW), printf("|");
+        printf("\n+--------+--------------------+--------------------+");
 		mostrar_mayor(raiz->der);
 	}
 }
 
-void buscar_reserva(NODO *raiz, int numero)//BUSCA RESERVA POR NUMERO DE VUELO
+int buscar_reserva(NODO *raiz, int numero, int cont)//BUSCA RESERVA POR NUMERO DE VUELO
 {
     if(raiz!=NULL){
-        buscar_reserva(raiz->izq, numero);
+        cont = buscar_reserva(raiz->izq, numero, cont);
         if (raiz->n_reserva == numero)
         {
-            printf("\n%d ",raiz->n_reserva);
-            printf("%s ", raiz->nombre);
-            printf("%s ", raiz->destino);
-            exit(0);
+            cont = cont + 1;
+            Color(BLACK, YELLOW);
+            if (cont == 1) printf("+--------+--------------------+--------------------+\n| Boleto |     Aventurero     |      Destino       |\n+--------+--------------------+--------------------+");
+            printf("\n|"), Color(BLACK, DGREY), printf("%*d",-8,raiz->n_reserva), Color(BLACK, YELLOW), printf("|");
+            Color(BLACK, DGREY), printf("%*s",-20,raiz->nombre), Color(BLACK, YELLOW), printf("|");
+            Color(BLACK, DGREY), printf("%*s",-20,raiz->destino), Color(BLACK, YELLOW), printf("|");
+            printf("\n+--------+--------------------+--------------------+\n");
+            Color(BLACK, DGREY);
         }
-        buscar_reserva(raiz->der, numero);
-	}else if (raiz == NULL)
-    {
-        printf("\nRESERVA NO ENCONTRADA");
-        return;
-    }
+        cont = buscar_reserva(raiz->der, numero, cont);
+	}
+    return cont;
 }
 
 NODO *CrearArbol(NODO *nuevo, int reserva)// CREA EL ARBOL E INSERTA NODOS
@@ -268,7 +311,7 @@ NODO *CrearArbol(NODO *nuevo, int reserva)// CREA EL ARBOL E INSERTA NODOS
         Color(BLACK, DGREY);
         fgets(nuevo->destino, sizeof(nuevo->destino), stdin);
         fflush(stdin);
-        nuevo->nombre[strcspn(nuevo->nombre, "\n")] = '\0';
+        nuevo->destino[strcspn(nuevo->destino, "\n")] = '\0';
 		nuevo->n_reserva = reserva;//ingresa numero de RESERVA
 		nuevo->der = NULL;
 		nuevo->izq = NULL;
@@ -325,7 +368,7 @@ int main()
 {
     srand(time(NULL));
     NODO *raiz = NULL;
-    int reserva, flag = 0;
+    int reserva, flag;
     char destino[20];
     inicio();
     system("pause");
@@ -334,7 +377,7 @@ int main()
         switch (menu())
         {
         case 0://AGREGAR RESERVA
-        	Color(BLACK, YELLOW);
+            Color(BLACK, YELLOW);
             printf("\nIngrese numero de boleto: ");
             Color(BLACK, DGREY);
             scanf("%d", &reserva);
@@ -344,50 +387,58 @@ int main()
         case 1://CANCELAR UNA RESERVA
             if (raiz != NULL)
             {
-                printf("\nIngrese reserva a cancelar:");
+                Color(BLACK, YELLOW);
+                printf("\nIngrese reserva a cancelar: ");
+                Color(BLACK, DGREY);
                 scanf("%d", &reserva);
                 raiz = Cancelar(raiz, reserva);
-            }else printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), system("pause");
+                printf("\n");
+                system("pause");
+
+            }else Color(BLACK, YELLOW), printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), Color(BLACK, DGREY), system("pause");
             
             break;
         case 2://BUSCAR REGISTRO DE RESERVA
             if (raiz != NULL)
             {
-                printf("\nIngrese reserva a buscar: ");
+                flag = 0;
+                printf("\nIngrese numero de reserva a buscar: ");
                 scanf("%d", &reserva);
                 fflush(stdin);
-                buscar_reserva(raiz, reserva);
-                printf("\n");
+                flag = buscar_reserva(raiz, reserva, 0);
+                if (flag == 0)printf("\nDESTINO NO ENCONTRADO\n");
                 system("pause");
-            }else printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), system("pause");
+            }else Color(BLACK, YELLOW), printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), Color(BLACK, DGREY), system("pause");
             break;
         case 3://BUSCAR POR DESTINO
             if (raiz != NULL)
             {
+                flag = 0;
                 printf("\nIngrese destino a buscar: ");
-                scanf("%s", destino);
+                fgets(destino, sizeof(destino), stdin);
                 fflush(stdin);
+                destino[strcspn(destino, "\n")] = '\0';
                 flag = buscar_destino(raiz, destino, 0);
-                if (flag == 0)printf("\nDESTINO NO ENCONTRADO");
-                
+                if (flag == 0) printf("\nDESTINO NO ENCONTRADO\n");
+                printf("\n");
+                Color(BLACK, DGREY);
                 system("pause");
-            }else printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), system("pause");
+            }else Color(BLACK, YELLOW), printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), Color(BLACK, DGREY), system("pause");
             break;
         case 4:
             if (raiz != NULL)//MOSTRAR RESERVAS ORDENADAS
             {
-            	Color(BLACK, YELLOW);
-            	printf("\n|Boleto\t|Aventurero\t|Destino\t|");
-            	Color(BLACK, DGREY);
+                Color(BLACK, YELLOW);
+                printf("+--------+--------------------+--------------------+\n| Boleto |     Aventurero     |      Destino       |\n+--------+--------------------+--------------------+");
                 mostrar_mayor(raiz);
                 printf("\n");
+                Color(BLACK, DGREY);
                 system("pause");
-            }else printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), system("pause");
+            }else Color(BLACK, YELLOW), printf("\nNO EXISTEN RESERVAS ACTUALMENTE\n"), Color(BLACK, DGREY), system("pause");
             break;
         case 5:
             system("cls");
             Color(BLACK, RED);
-
             finprogram();
             printf("Fin Del Programa.");
             treefree(raiz);
