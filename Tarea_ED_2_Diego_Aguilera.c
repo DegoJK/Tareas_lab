@@ -420,7 +420,9 @@ int main()
             if (raiz != NULL)
             {
                 flag = 0;
+                Color(BLACK, YELLOW);
                 printf("\nIngrese numero de reserva a buscar: ");
+                Color(BLACK, DGREY);
                 scanf("%d", &reserva);
                 fflush(stdin);
                 flag = buscar_reserva(raiz, reserva, 0);
@@ -432,7 +434,9 @@ int main()
             if (raiz != NULL)
             {
                 flag = 0;
+                Color(BLACK, YELLOW);
                 printf("\nIngrese destino a buscar: ");
+                Color(BLACK, DGREY);
                 fgets(destino, sizeof(destino), stdin);
                 fflush(stdin);
                 destino[strcspn(destino, "\n")] = '\0';
