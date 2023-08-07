@@ -440,7 +440,6 @@ int main()
             system("cls");
             Color(BLACK, RED);
             finprogram();
-            printf("Fin Del Programa.");
             treefree(raiz);
             exit(0);
             break;
